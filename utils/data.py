@@ -37,17 +37,25 @@ class BODataset:
         self.problem = problem
         self.data: list[ObservedData] = []
 
-    def add(self, new_X: Tensor, metadata: dict[str, Any]) -> None:
+    def add(
+        self,
+        new_X: Tensor,
+        new_Y: Tensor,
+        new_C: Tensor | None = None,
+        metadata: dict[str, Any] = {},
+    ) -> None:
         new_X = torch.atleast_2d(new_X)
+        new_Y = torch.atleast_2d(new_Y)
         assert new_X.size(-1) == self.problem.dim
-        for X in new_X:
-            if hasattr(self.problem, "num_constraints"):
-                Y, C = self.problem(X=X)
+        if hasattr(self.problem, "num_constraints"):
+            new_C = torch.atleast_2d(new_C)
+            for X, Y, C in zip(new_X, new_Y, new_C):
                 obs = ObservedData(X=X, Y=Y, C=C, metadata=metadata)
-            else:
-                Y = self.problem(X=X)
+                self.data.append(obs)
+        else:
+            for X, Y in zip(new_X, new_Y):
                 obs = ObservedData(X=X, Y=Y, metadata=metadata)
-            self.data.append(obs)
+                self.data.append(obs)
 
     def get(self) -> list[tuple[Tensor, Tensor]]:
         train_data = []
