@@ -32,7 +32,11 @@ class ProblemFactory:
         return decorator
 
     @classmethod
-    def create(cls, name: str, **kwargs) -> BaseTestProblem:
+    def create(
+        cls,
+        name: str,
+        **kwargs
+    ) -> BaseTestProblem:
         if name not in cls.REGISTRY:
             raise ValueError(
                 f"Unsupported problem type: {name}. ",
@@ -42,9 +46,9 @@ class ProblemFactory:
         sig = inspect.signature(problem_cls.__init__).parameters.values()
         args_list = [p.name for p in sig if p.name != "self"]
         params = {}
-        for k, v in kwargs.items():
-            if k in args_list:
-                params[k] = v
+        for key, value in kwargs.items():
+            if key in args_list:
+                params[key] = value
         return problem_cls(**params)
 
 
