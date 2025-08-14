@@ -61,7 +61,7 @@ class BODataset:
         train_data = []
         data_X = torch.stack([obs.X for obs in self.data])
         data_Y = torch.stack([obs.Y for obs in self.data])
-        for i in data_Y.size(-1):
+        for i in range(data_Y.size(-1)):
             mask = ~torch.isnan(data_Y[:, i])
             train_X = data_X[mask, :]
             train_Y = data_X[:, i:i+1]
