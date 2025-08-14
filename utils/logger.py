@@ -87,7 +87,12 @@ class ExperimentLogger:
     def info_model(self, model: Model) -> None:
         self.logger.info("+------------------------------------------+")
         for name, param in model.named_parameters():
-            self.logger.info(f"+ {name} : {param.data}")
+            c = model.constraint_for_parameter_name(name)
+            name = name.replace("raw_", "")
+            if c is not None:
+                self.logger.info(f"+ {name} : {c.transform(param).data}")
+            else:
+                self.logger.info(f"+ {name} : {param.data}")
         self.logger.info("+------------------------------------------+")
 
     def info(self, message: str) -> None:
