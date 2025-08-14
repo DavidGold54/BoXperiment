@@ -1,0 +1,98 @@
+# ============================================================================
+# test-basic
+# ============================================================================
+# Describe multiple experimental settings with common basic settings together.
+
+# ----------------------------------------------------------------------------
+# Global settings 
+# ----------------------------------------------------------------------------
+# Common settings for all experiments
+global:
+
+  # Basic settings -----------------------------------------------------------
+  n_iter: 10
+  n_init: 5
+  q: 1
+  num_restarts: 10
+  raw_samples: 512
+
+  # Strategy settings --------------------------------------------------------
+  strategy:
+    name: Basic
+
+  # Problem settings ---------------------------------------------------------
+  ### See https://botorch.readthedocs.io/en/latest/test_functions.html
+  problem:
+    name: Branin
+    noise_std: 1.0e-04
+    negate: True
+    bounds: null
+
+  # Model settings -----------------------------------------------------------
+  ### See https://botorch.readthedocs.io/en/latest/models.html
+  model:
+    name: SingleTaskGP
+
+    # Likelihood settings
+    ### See https://docs.gpytorch.ai/en/latest/likelihoods.html
+    likelihood:
+      name: GaussianLikelihood
+      noise_constraint: {name: GreaterThan, lower_bound: 1.0e-04}
+      noise_prior: {name: LogNormalPrior, loc: -6.9, scale: 1.0}
+
+    # Mean settings
+    ### See https://docs.gpytorch.ai/en/latest/means.html
+    mean_module:
+      name: ConstantMean
+      # constant_prior: null
+      # constant_constraint: null
+    
+    # Kernel settings
+    ### See https://docs.gpytorch.ai/en/latest/kernels.html
+    covar_module:
+      name: ScaleKernel
+      base_kernel:
+        name: RBFKernel
+        ard_num_dims: null
+        lengthscale_prior: {name: LogNormalPrior, loc: 0.0, scale: 1.535}
+        lengthscale_constraint:
+          name: Interval
+          lower_bound: 1.0e-02
+          upper_bound: 1.0e+02
+      outputscale_prior: {name: LogNormalPrior, loc: 0.0, scale: 1.535}
+      outputscale_constraint:
+        name: Interval
+        lower_bound: 1.0e-02
+        upper_bound: 1.0e+02
+      
+  # Marginal Log Likelihood (MLL) settings -----------------------------------
+  ### See https://docs.gpytorch.ai/en/latest/marginal_log_likelihoods.html
+  mll:
+    name: ExactMarginalLogLikelihood
+
+
+# ----------------------------------------------------------------------------
+# Local settings
+# ----------------------------------------------------------------------------
+# Specific settings for each experiment
+local:
+
+  - name: test_0
+    seed: 0
+    # Acquisition function settings ------------------------------------------
+    ### See https://botorch.readthedocs.io/en/latest/acquisition.html
+    acquisition: &logei
+      name: LogExpectedImprovement
+
+  - name: test_0
+    seed: 1
+    acquisition: *logei
+
+  - name: test_1
+    seed: 0
+    acquisition: &logpi
+      name: LogProbabilityOfImprovement
+
+  - name: test_1
+    seed: 1
+    acquisition: *logpi

@@ -38,7 +38,7 @@ class BORunner:
 
     def run(self) -> None:
         
-        self.logger.info(f"Generating initial data ...")
+        self.logger.info("Generating initial data ...")
         init_X, init_Y = self.strategy.generate_initial_data(self.dataset)
         self.dataset.add(init_X, init_Y, metadata={"init": True})
         self.logger.info_obs(self.dataset.data)
@@ -49,11 +49,11 @@ class BORunner:
                 f"<<< Iteration {it+1:3d}/{self.config.n_iter} >>>"
             )
             
-            self.logger.info(f"Fitting the model ...")
+            self.logger.info("Fitting the model ...")
             model = self.strategy.fit_model(self.dataset)
             self.logger.info_model(model)
 
-            self.logger.info(f"Acquiring next observation point ...")
+            self.logger.info("Acquiring next observation point ...")
             new_X, new_Y = self.strategy.get_next_data(
                 dataset=self.dataset,
                 model=model,
@@ -61,7 +61,9 @@ class BORunner:
             self.dataset.add(new_X, new_Y, metadata={"init": False})
             self.logger.info_obs(self.dataset.data[-1:])
         
-        self.logger.info(f"")
+        self.logger.info("Saving results ...")
+        path = self.local_dir / "dataset.pth"
+        self.dataset.save(path)
         self.logger.close()
 
 

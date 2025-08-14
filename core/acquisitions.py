@@ -21,6 +21,7 @@ class AcquisitionFactory:
 
     REGISTRY: dict[str, AcquisitionFunction] = {
         "LogExpectedImprovement": analytic.LogExpectedImprovement,
+        "LogProbabilityOfImprovement": analytic.LogProbabilityOfImprovement,
     }
 
     @classmethod
