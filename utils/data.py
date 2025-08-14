@@ -64,7 +64,7 @@ class BODataset:
         for i in range(data_Y.size(-1)):
             mask = ~torch.isnan(data_Y[:, i])
             train_X = data_X[mask, :]
-            train_Y = data_X[:, i:i+1]
+            train_Y = data_Y[:, i:i+1]
             train_data.append((train_X, train_Y))
         if hasattr(self.problem, "num_constraints"):
             data_C = torch.stack([obs.C for obs in self.data])
