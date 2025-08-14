@@ -25,7 +25,7 @@ class ExperimentLogger:
         fmt = logging.Formatter(
             "[%(asctime)s] - %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
         )
-        file = self.result_dir / "experiment.log"
+        file = self.local_dir / "experiment.log"
         file_handler = logging.FileHandler(file, mode="w")
         file_handler.setFormatter(fmt)
         self.logger.addHandler(file_handler)
@@ -75,12 +75,7 @@ class ExperimentLogger:
             yaml.safe_dump(vars(config), f, sort_keys=False)
         self.logger.info(f"Configuration is saved to {config_path}")
 
-    @overload
-    def info(self, message: str) -> None:
-        self.logger.info(message)
-
-    @overload
-    def info(self, obs_list: list[ObservedData]) -> None:
+    def info_obs(self, obs_list: list[ObservedData]) -> None:
         self.logger.info("+------------------------------------------+")
         for obs in obs_list:
             self.logger.info(f"+ Observation")
@@ -89,12 +84,14 @@ class ExperimentLogger:
             self.logger.info(f"+   timestamp : {obs.timestamp}")
         self.logger.info("+------------------------------------------+")
 
-    @overload
-    def info(self, model: Model) -> None:
+    def info_model(self, model: Model) -> None:
         self.logger.info("+------------------------------------------+")
         for name, param in model.named_parameters():
-            self.logger.info(f"+ {name} : {param}")
+            self.logger.info(f"+ {name} : {param.data}")
         self.logger.info("+------------------------------------------+")
+
+    def info(self, message: str) -> None:
+        self.logger.info(message)
 
     def __del__(self) -> None:
         self.end()
