@@ -20,7 +20,7 @@ class AcquisitionFactory:
     """
 
     REGISTRY: dict[str, AcquisitionFunction] = {
-        "ExpectedImprovement": analytic.ExpectedImprovement,
+        "LogExpectedImprovement": analytic.LogExpectedImprovement,
     }
 
     @classmethod
